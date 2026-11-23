@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "npx http-server -p 5000",
+    "fetch-deals": "node scripts/fetch-cuelinks.js",
     "generate": "node generate-deals.js",
     "fetch-images": "node scripts/fetch-images.js",
     "sitemap": "node scripts/gen-sitemap.js",

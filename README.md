@@ -2,6 +2,10 @@
 
 Global deals and coupons website powered by the **Cuelinks V3 API**.
 
+## Documentation
+
+**[`PROJECT-GUIDE.md`](PROJECT-GUIDE.md)** is the full project and operations guide: architecture, data model, daily/weekly processing, adding deals, categories/tags, filters, deployment, troubleshooting, and instructions for AI coding agents. Start there.
+
 ## Stack
 
 - **Frontend**: static HTML/CSS/vanilla JS (Cloudflare Pages / GitHub Pages compatible)
@@ -37,7 +41,7 @@ For Cloudflare Pages Functions locally, use Wrangler and set `CUELINKS_API_KEY` 
 
 ### 4. Refresh deals
 - **Automatic/scheduled**: GitHub Action `.github/workflows/fetch-cuelinks.yml` runs every 6 hours or manually. Add repo secret `CUELINKS_API_KEY`.
-- **Manual**: run `node scripts/fetch-cuelinks.js` with `CUELINKS_API_KEY` set.
+- **Manual**: run `npm run fetch-deals` (or `node scripts/fetch-cuelinks.js`) with `CUELINKS_API_KEY` set, then `npm run sitemap`.
 
 ## Important
 
