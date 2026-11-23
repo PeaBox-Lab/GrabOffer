@@ -37,8 +37,8 @@
         <button type="submit">Search</button>
       </form>
       <div class="hero-stats">
-        <div><div class="stat">1,200+</div><div>Deals tracked</div></div>
-        <div><div class="stat">50+</div><div>Stores covered</div></div>
+        <div><div class="stat" id="stat-deals">1,700+</div><div>Deals tracked</div></div>
+        <div><div class="stat" id="stat-stores">50+</div><div>Stores covered</div></div>
         <div><div class="stat">24/7</div><div>Price updates</div></div>
       </div>
     </div>
@@ -68,15 +68,15 @@
           <h3>Home &amp; Kitchen</h3>
           <p>Appliances, furniture, and home essentials.</p>
         </a>
-        <a href="deals.html?category=Grocery" class="categories-card">
+        <a href="deals.html?category=Food%20%26%20Grocery" class="categories-card">
           <div class="icon">🛒</div>
-          <h3>Grocery</h3>
-          <p>Organic foods, staples, and weekly essentials.</p>
+          <h3>Food &amp; Grocery</h3>
+          <p>Food, staples, and everyday essentials.</p>
         </a>
-        <a href="deals.html?category=Accessories" class="categories-card">
-          <div class="icon">⌚</div>
-          <h3>Accessories</h3>
-          <p>Smartwatches, backpacks, and gadgets.</p>
+        <a href="deals.html?category=Health%20%26%20Beauty" class="categories-card">
+          <div class="icon">💄</div>
+          <h3>Health &amp; Beauty</h3>
+          <p>Personal care, wellness, and beauty deals.</p>
         </a>
       </div>
     </div>
@@ -118,8 +118,8 @@
       <div>
         <h3>Newsletter</h3>
         <p class="u-text-sm">Get the best deals of the day in your inbox.</p>
-        <form class="newsletter">
-          <input type="email" placeholder="your@email.com" aria-label="Email" />
+        <form class="newsletter" novalidate>
+          <input type="email" name="email" placeholder="your@email.com" aria-label="Email address" autocomplete="email" />
           <button type="submit">Subscribe</button>
         </form>
       </div>

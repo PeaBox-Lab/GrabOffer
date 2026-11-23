@@ -33,34 +33,14 @@
   <section class="featured-deals-section" style="border-bottom:none; margin-top:1rem; padding-top:1rem;">
     <div class="container">
       <div class="u-flex" style="gap:1rem; flex-wrap:wrap; align-items:center; justify-content:space-between;">
-        <form class="search-form" style="margin-top:0; flex:1; max-width:480px;">
-          <input type="search" id="searchInput" placeholder="Search deals, brands, or coupons..." aria-label="Search deals" />
+        <form class="search-form" style="margin-top:0; flex:1; max-width:480px;" role="search" action="deals.html" method="get">
+          <input type="search" id="searchInput" name="q" placeholder="Search deals, brands, or coupons..." aria-label="Search deals" />
         </form>
-        <div class="u-flex" style="gap:.5rem; flex-wrap:wrap;" aria-label="Category filter">
-          <button type="button" class="filter-btn" data-category="all" aria-pressed="false">All</button>
-          <button type="button" class="filter-btn" data-category="Mobiles" aria-pressed="false">Mobiles</button>
-          <button type="button" class="filter-btn" data-category="Electronics" aria-pressed="false">Electronics</button>
-          <button type="button" class="filter-btn" data-category="Fashion" aria-pressed="false">Fashion</button>
-          <button type="button" class="filter-btn" data-category="Food & Grocery" aria-pressed="false">Food & Grocery</button>
-          <button type="button" class="filter-btn" data-category="Health & Beauty" aria-pressed="false">Health & Beauty</button>
-          <button type="button" class="filter-btn" data-category="Travel" aria-pressed="false">Travel</button>
-          <button type="button" class="filter-btn" data-category="Education" aria-pressed="false">Education</button>
-          <button type="button" class="filter-btn" data-category="Others" aria-pressed="false">Others</button>
+        <div class="u-flex" id="category-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Category filter">
+          <button type="button" class="filter-btn active" data-category="all" aria-pressed="true">All</button>
         </div>
-        <div class="u-flex" style="gap:.5rem; flex-wrap:wrap;" aria-label="Store filter">
-          <button type="button" class="filter-btn" data-site="all" aria-pressed="false">All Stores</button>
-          <button type="button" class="filter-btn" data-site="Amazon.in" aria-pressed="false">Amazon</button>
-          <button type="button" class="filter-btn" data-site="Flipkart" aria-pressed="false">Flipkart</button>
-          <button type="button" class="filter-btn" data-site="Myntra" aria-pressed="false">Myntra</button>
-          <button type="button" class="filter-btn" data-site="Ajio" aria-pressed="false">Ajio</button>
-          <button type="button" class="filter-btn" data-site="Tata Cliq" aria-pressed="false">Tata Cliq</button>
-          <button type="button" class="filter-btn" data-site="Reliance Digital" aria-pressed="false">Reliance Digital</button>
-          <button type="button" class="filter-btn" data-site="Croma" aria-pressed="false">Croma</button>
-          <button type="button" class="filter-btn" data-site="BigBasket" aria-pressed="false">BigBasket</button>
-          <button type="button" class="filter-btn" data-site="Vijay Sales" aria-pressed="false">Vijay Sales</button>
-          <button type="button" class="filter-btn" data-site="Harrods" aria-pressed="false">Harrods</button>
-          <button type="button" class="filter-btn" data-site="Pep Jeans" aria-pressed="false">Pep Jeans</button>
-          <button type="button" class="filter-btn" data-site="Zoomin" aria-pressed="false">Zoomin</button>
+        <div class="u-flex" id="site-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Store filter">
+          <button type="button" class="filter-btn active" data-site="all" aria-pressed="true">All Stores</button>
         </div>
       </div>
       <div class="featured-deals-grid" id="deals-grid">
@@ -96,8 +76,8 @@
       <div>
         <h3>Newsletter</h3>
         <p class="u-text-sm">Get the best deals of the day in your inbox.</p>
-        <form class="newsletter">
-          <input type="email" placeholder="your@email.com" aria-label="Email" />
+        <form class="newsletter" novalidate>
+          <input type="email" name="email" placeholder="your@email.com" aria-label="Email address" autocomplete="email" />
           <button type="submit">Subscribe</button>
         </form>
       </div>

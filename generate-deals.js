@@ -16,7 +16,23 @@ const records = parse(csvContent, {
 const headers = ['Id','Title','Merchant','Categories','Description','Terms','Coupon Code','URL','Status','Start Date','End Date','Offer Added At','Image URL','Campaign ID','Campaign Name'];
 
 const deals = [];
-for (let i = 1; i < records.length; i++) {
+const existingPath = path.join(__dirname, 'data', 'deals.json');
+const imageCachePath = path.join(__dirname, 'data', 'image-cache.json');
+let existingImages = new Map();
+try {
+  const existing = JSON.parse(fs.readFileSync(existingPath, 'utf8'));
+  (existing.deals || []).forEach((d) => {
+    if (d && d.id && d.image) existingImages.set(String(d.id), { image: d.image, imageSource: d.imageSource || '' });
+  });
+} catch (_) {}
+try {
+  const cache = JSON.parse(fs.readFileSync(imageCachePath, 'utf8'));
+  Object.entries(cache).forEach(([id, v]) => {
+    if (v && v.image) existingImages.set(String(id), { image: v.image, imageSource: 'product-page' });
+  });
+} catch (_) {}
+
+for (let i = 0; i < records.length; i++) {
   const row = records[i];
   const id = String(row.Id || '');
   const title = String(row.Title || '');
@@ -35,14 +51,58 @@ for (let i = 1; i < records.length; i++) {
   const campaignName = String(row['Campaign Name'] || '');
 
   // Parse categories
-  const catList = categoriesRaw.split(',').map(c => c.trim()).filter(c => c);
-  const category = catList[0] || 'Uncategorized';
+  const catList = categoriesRaw.split(',').map(c => c.trim()).filter(Boolean);
+  const categoryMap = {
+    'grocery': 'Food & Grocery',
+    'food & grocery': 'Food & Grocery',
+    'health & beauty': 'Health & Beauty',
+    'beauty': 'Health & Beauty',
+    'health': 'Health & Beauty',
+    'fashion': 'Fashion',
+    'electronics': 'Electronics',
+    'mobiles': 'Mobiles & Accessories',
+    'mobile': 'Mobiles & Accessories',
+    'accessories': 'Mobiles & Accessories',
+    'home & kitchen': 'Home & Kitchen',
+    'home': 'Home & Kitchen',
+    'travel': 'Travel',
+    'education': 'Education',
+    'software': 'Software & Services',
+    'services': 'Software & Services',
+    'sports': 'Sports & Outdoors',
+    'entertainment': 'Entertainment',
+    'gaming': 'Gaming',
+    'flowers & gifts': 'Gifts & Flowers',
+    'baby & kids': 'Baby & Kids',
+    'books': 'Books & Stationery',
+    'artificial intelligence': 'Software & Services',
+    'finance': 'Finance',
+    'recharge': 'Finance',
+    'others': 'Others',
+    'uncategorized': 'Others'
+  };
+  const rawCategory = catList[0] || 'Others';
+  const category = categoryMap[rawCategory.toLowerCase()] || rawCategory;
+
+  const text = `${title} ${description} ${terms} ${couponCode} ${merchant} ${catList.join(' ')}`.toLowerCase();
+  const tags = new Set();
+  tags.add(category);
+  if (merchant) tags.add(merchant);
+  catList.slice(1, 4).forEach((c) => { const n = categoryMap[c.toLowerCase()] || c; if (n && n !== category) tags.add(n); });
+  if (couponCode) tags.add('Coupon Code');
+  if (/free shipping|free delivery/.test(text)) tags.add('Free Delivery');
+  if (/cashback|cash back/.test(text)) tags.add('Cashback');
+  if (/new user|first order|first purchase/.test(text)) tags.add('New User');
+  if (/app only|app-exclusive|on app/.test(text)) tags.add('App Deal');
+  if (/% off|flat \d+|rs\.\s*\d+ off|₹\s*\d+ off|discount/.test(text)) tags.add('Discount');
+  if (/free/.test(text) && !/free shipping|free delivery/.test(text)) tags.add('Freebie');
 
   const deal = {
     id: id,
     title: title,
     merchant: merchant,
     category: category,
+    tags: [...tags].slice(0, 8),
     description: description,
     terms: terms,
     couponCode: couponCode,
@@ -51,7 +111,8 @@ for (let i = 1; i < records.length; i++) {
     startDate: startDate,
     endDate: endDate,
     offerAddedAt: offerAddedAt,
-    image: imageUrl,
+    image: (existingImages.get(id) && existingImages.get(id).image) ? existingImages.get(id).image : imageUrl,
+    imageSource: (existingImages.get(id) && existingImages.get(id).imageSource) ? existingImages.get(id).imageSource : 'campaign',
     campaignId: campaignId,
     campaign: campaignName
   };
@@ -86,4 +147,35 @@ htmlFiles.forEach(file => {
   }
 });
 
+function xmlEscape(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+const baseUrl = 'https://graboffer.github.io';
+const urls = [
+  { loc: `${baseUrl}/`, changefreq: 'daily', priority: '1.0' },
+  { loc: `${baseUrl}/deals.html`, changefreq: 'daily', priority: '0.9' },
+  ...deals.map((deal) => ({
+    loc: `${baseUrl}/deal-detail.html?id=${encodeURIComponent(deal.id)}`,
+    changefreq: 'weekly',
+    priority: '0.6'
+  }))
+];
+
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((u) => `  <url>
+    <loc>${xmlEscape(u.loc)}</loc>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('\n')}
+</urlset>
+`;
+fs.writeFileSync(path.join(__dirname, 'sitemap.xml'), sitemap);
+console.log(`✅ Generated sitemap.xml with ${urls.length} URLs`);
 console.log('🎉 Deal generation complete!');
