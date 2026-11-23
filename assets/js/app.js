@@ -496,6 +496,7 @@ function initFilters() {
   if (clear) {
     clear.addEventListener('click', () => {
       document.querySelectorAll('.filter-panel input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
+      if (search) search.value = '';
       updateFilterSummary();
       applyFilters();
     });
