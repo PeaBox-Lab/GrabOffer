@@ -91,58 +91,153 @@ function isExpired(deal) {
   return Number.isNaN(end.getTime()) ? false : end < new Date();
 }
 
+const MERCHANT_DOMAINS = {
+  'amazon': 'amazon.in', 'flipkart': 'flipkart.com', 'myntra': 'myntra.com',
+  'ajio': 'ajio.com', 'croma': 'croma.com', 'tata cliq': 'tatacliq.com',
+  'vijay sales': 'vijaysales.com', 'reliance digital': 'reliancedigital.in',
+  'bigbasket': 'bigbasket.com', 'nykaa': 'nykaa.com', 'decathlon': 'decathlon.in',
+  'udemy': 'udemy.com', 'jockey': 'jockey.in', 'h&m': 'hm.com', 'uniqlo': 'uniqlo.com',
+  'leverage edu': 'leverageedu.com', 'bewakoof': 'bewakoof.com', 'pepe jeans': 'pepejeans.in',
+  'bookmyshow': 'bookmyshow.com', 'makemytrip': 'makemytrip.com', 'goibibo': 'goibibo.com',
+  'oyo': 'oyorooms.com', 'zomato': 'zomato.com', 'swiggy': 'swiggy.com',
+};
+
+function merchantDomain(deal) {
+  const merchant = normalizeMerchant(deal.merchant || deal.site || '').toLowerCase();
+  if (MERCHANT_DOMAINS[merchant]) return MERCHANT_DOMAINS[merchant];
+  try {
+    const url = new URL(String(deal.buyLink || ''));
+    const dest = url.searchParams.get('url') || url.href;
+    const parsed = new URL(dest);
+    return parsed.hostname.replace(/^www\./, '');
+  } catch (_) {}
+  return '';
+}
+
+function merchantIcon(deal) {
+  const merchant = normalizeMerchant(deal.merchant || deal.site || 'Store');
+  const domain = merchantDomain(deal);
+  const initials = merchant.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  const fallback = `<span class="merchant-fallback">${escapeHtml(initials)}</span>`;
+  if (!domain) return fallback;
+  return `<img class="merchant-logo" src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64" alt="${escapeHtml(merchant)} logo" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'merchant-fallback',textContent:'${escapeHtml(initials)}'}))">`;
+}
+
+function formatDate(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function computeExtraTags(deal) {
+  const endTs = deal.endDate ? new Date(deal.endDate).getTime() : NaN;
+  const addedTs = deal.offerAddedAt ? new Date(deal.offerAddedAt).getTime() : NaN;
+  const now = Date.now();
+  const endingSoon = !Number.isNaN(endTs) && endTs > now && endTs - now <= 7 * 86400000;
+  const isNew = !Number.isNaN(addedTs) && now - addedTs <= 7 * 86400000;
+  return [endingSoon ? 'Ends soon' : '', isNew ? 'New' : ''].filter(Boolean);
+}
+
+function dealAllTags(deal) {
+  return [...computeExtraTags(deal), ...(Array.isArray(deal.tags) ? deal.tags : [])];
+}
+
 function dealCardTemplate(deal) {
   const expired = isExpired(deal);
-  const hasPrice = deal.price && deal.price > 0;
-  const hasMrp = deal.mrp && deal.mrp > 0;
-  const hasDiscount = deal.discount && deal.discount > 0;
+  const price = deal.discountPrice ?? deal.price;
+  const mrp = deal.originalPrice ?? deal.mrp;
+  const percentOff = deal.percentOff ?? deal.discount;
+  const hasPrice = price && price > 0;
+  const hasMrp = mrp && mrp > 0;
+  const hasDiscount = percentOff && percentOff > 0;
   const merchant = normalizeMerchant(deal.merchant || deal.site);
   const category = normalizeCategory(deal.category);
   const coupon = deal.couponCode && deal.couponCode.trim() ? deal.couponCode.trim() : null;
-  const imageUrl = sanitizeUrl(deal.image) || PLACEHOLDER_IMAGE;
   const buyLink = sanitizeUrl(deal.buyLink);
-  const buyAction = buyLink
-    ? `<a class="buy-btn" href="${escapeHtml(buyLink)}" target="_blank" rel="nofollow sponsored noopener noreferrer">${expired ? 'View offer' : 'Buy Now'}</a>`
+  const endDate = formatDate(deal.endDate);
+  const startDate = formatDate(deal.startDate);
+  const extraTags = computeExtraTags(deal);
+  const buyAction = buyLink    ? `<a class="buy-btn" href="${escapeHtml(buyLink)}" target="_blank" rel="nofollow sponsored noopener noreferrer">${expired ? 'View offer' : 'Buy Now'} <span aria-hidden="true">&rarr;</span></a>`
     : `<span class="buy-btn buy-btn-disabled" aria-disabled="true">Link unavailable</span>`;
 
   return `
     <article class="deal-card" data-deal-id="${escapeHtml(deal.id)}">
-      <div class="image-wrapper">
-        <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(deal.title)}" loading="lazy" width="600" height="600" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}'">
-        ${deal.offerType ? `<span class="badge-discount">${escapeHtml(deal.offerType === 'coupon' ? 'Coupon' : 'Deal')}</span>` : (hasDiscount ? `<span class="badge-discount">${escapeHtml(deal.discount + '% off')}</span>` : '')}
-        <span class="badge-site">${escapeHtml(merchant)}</span>
-      </div>
-      <div class="card-body">
-        <h3 class="card-title"><a href="deal-detail.html?id=${encodeURIComponent(deal.id)}">${escapeHtml(deal.title)}</a></h3>
-        <div class="card-site">${escapeHtml(category)} · ${escapeHtml(merchant)}</div>
-        ${hasPrice || hasMrp ? `
-        <div class="price-row">
-          ${hasPrice ? `<span class="price">${formatPrice(deal.price)}</span>` : ''}
-          ${hasMrp ? `<span class="mrp">${formatPrice(deal.mrp)}</span>` : ''}
-          ${hasDiscount ? `<span class="discount-text">${escapeHtml(deal.discount + '% off')}</span>` : ''}
-        </div>` : ''}
-        <p class="desc">${escapeHtml(deal.description)}</p>
-        ${Array.isArray(deal.tags) && deal.tags.length ? `<div class="tag-row">${deal.tags.slice(0, 4).map((tag) => `<span class="tag-pill">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
-        <div class="card-actions">
+      <div class="deal-row">
+        <div class="deal-icon">
+          ${merchantIcon(deal)}
+          <span class="deal-type-dot ${deal.offerType === 'coupon' ? 'is-coupon' : 'is-deal'}" title="${deal.offerType === 'coupon' ? 'Coupon' : 'Deal'}"></span>
+        </div>
+        <div class="deal-main">
+          <div class="deal-topline">
+            <span class="deal-cat">${escapeHtml(category)}</span>
+            <span class="deal-merchant">${escapeHtml(merchant)}</span>
+            ${deal.offerType ? `<span class="type-badge ${deal.offerType}">${deal.offerType === 'coupon' ? 'Coupon' : 'Deal'}</span>` : ''}
+          </div>
+          <h3 class="card-title"><a href="deal-detail.html?id=${encodeURIComponent(deal.id)}">${escapeHtml(deal.title)}</a></h3>
+          ${hasPrice || hasMrp ? `
+          <div class="price-row">
+            ${hasPrice ? `<span class="price">${formatPrice(price)}</span>` : ''}
+            ${hasMrp ? `<span class="mrp">${formatPrice(mrp)}</span>` : ''}
+            ${hasDiscount ? `<span class="discount-text">${escapeHtml(Math.round(percentOff) + '% off')}</span>` : ''}
+          </div>` : ''}
+          <p class="desc">${escapeHtml(deal.description)}</p>
+          ${(Array.isArray(deal.tags) && deal.tags.length) || extraTags.length ? `<div class="tag-row">${[...extraTags, ...(deal.tags || [])].slice(0, 6).map((tag) => `<span class="tag-pill ${tag === 'Ends soon' ? 'tag-soon' : (tag === 'New' ? 'tag-new' : '')}">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+          <div class="deal-meta">
+            ${startDate ? `<span>Start: ${escapeHtml(startDate)}</span>` : ''}
+            ${endDate ? `<span>Ends: ${escapeHtml(endDate)}</span>` : ''}
+          </div>
+        </div>
+        <div class="deal-side">
           ${buyAction}
-          ${coupon
-            ? `<span class="coupon-pill">Coupon: ${escapeHtml(coupon)}</span>`
-            : '<span class="no-coupon">No coupon needed</span>'}
+          ${coupon ? `<span class="coupon-pill">${escapeHtml(coupon)}</span>` : '<span class="no-coupon">No code needed</span>'}
         </div>
       </div>
     </article>
   `;
 }
 
-function renderDeals(containerId, deals) {
+function renderDeals(containerId, list) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  container.innerHTML = deals.length
-    ? deals.map(dealCardTemplate).join('')
+  const isGrid = containerId === 'deals-grid' || containerId === 'featured-deals';
+  if (isGrid) filteredDeals = list;
+  const perPage = isGrid ? DEALS_PER_PAGE : list.length;
+  const totalPages = Math.max(1, Math.ceil(list.length / perPage));
+  if (isGrid && currentPage > totalPages) currentPage = totalPages;
+  const start = isGrid ? (currentPage - 1) * perPage : 0;
+  const pageItems = isGrid ? list.slice(start, start + perPage) : list;
+  container.innerHTML = pageItems.length
+    ? pageItems.map(dealCardTemplate).join('')
     : `<p class="u-text-center u-text-sm">No deals match your search.</p>`;
+
+  renderPagination(isGrid ? totalPages : 0, list.length);
+}
+
+function renderPagination(totalPages, totalItems) {
+  const el = document.getElementById('pagination');
+  if (!el) return;
+  if (totalPages <= 1) { el.innerHTML = totalItems ? `<p class="page-summary">Showing all ${totalItems} offers</p>` : ''; return; }
+
+  const pages = [];
+  for (let i = 1; i <= totalPages; i += 1) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) pages.push(i);
+    else if (pages[pages.length - 1] !== '...') pages.push('...');
+  }
+
+  el.innerHTML = `
+    <p class="page-summary">Showing ${(currentPage - 1) * DEALS_PER_PAGE + 1}–${Math.min(currentPage * DEALS_PER_PAGE, totalItems)} of ${totalItems} offers</p>
+    <nav class="pager" aria-label="Deal pagination">
+      <button type="button" class="pager-btn" data-page="prev" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+      ${pages.map((p) => p === '...' ? '<span class="pager-gap">…</span>' : `<button type="button" class="pager-btn ${p === currentPage ? 'is-current' : ''}" data-page="${p}" aria-current="${p === currentPage ? 'page' : 'false'}">${p}</button>`).join('')}
+      <button type="button" class="pager-btn" data-page="next" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+    </nav>`;
 }
 
 let deals = [];
+let filteredDeals = [];
+let currentPage = 1;
+const DEALS_PER_PAGE = 12;
 
 async function fetchLiveOffers() {
   const params = new URLSearchParams(location.search);
@@ -216,7 +311,8 @@ async function loadDeals() {
   }
 
   if (document.getElementById('featured-deals')) {
-    renderDeals('featured-deals', deals.slice(0, 6));
+    renderDeals('featured-deals', deals);
+    initIndexPagination();
   }
 
   if (document.getElementById('deals-grid')) {
@@ -234,157 +330,122 @@ function cssEscape(value) {
   return String(value).replace(/[^a-zA-Z0-9 _-]/g, '\\$&');
 }
 
-function renderFilters() {
-  const categoryContainer = document.getElementById('category-filters');
-  const siteContainer = document.getElementById('site-filters');
-  if (!categoryContainer || !siteContainer) return;
+function renderFilterOptions(group, options) {
+  const panel = document.querySelector(`#filter-${group} .filter-panel`);
+  if (!panel) return;
+  panel.innerHTML = options.map(({ value, label, count }) => `
+    <label class="filter-option">
+      <input type="checkbox" value="${escapeHtml(value)}" data-filter-group="${group}" />
+      <span class="filter-option-label">${escapeHtml(label)}</span>
+      <span class="filter-option-count">${count || ''}</span>
+    </label>`).join('');
+}
 
+function renderFilters() {
   const categoryCounts = new Map();
   const siteCounts = new Map();
+  const tagCounts = new Map();
+  let couponCount = 0;
+  let dealCount = 0;
+
   deals.forEach((deal) => {
     const category = normalizeCategory(deal.category);
     const merchant = normalizeMerchant(deal.merchant || deal.site);
+    const type = deal.offerType || (deal.couponCode ? 'coupon' : 'deal');
     categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1);
     siteCounts.set(merchant, (siteCounts.get(merchant) || 0) + 1);
+    dealAllTags(deal).forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1));
+    if (type === 'coupon') couponCount += 1; else dealCount += 1;
   });
 
-  const categories = [...categoryCounts.entries()]
+  renderFilterOptions('type', [
+    { value: 'coupon', label: 'Coupons', count: couponCount },
+    { value: 'deal', label: 'Deals', count: dealCount }
+  ]);
+
+  renderFilterOptions('tag', [...tagCounts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .map(([name]) => name);
-  const sites = [...siteCounts.entries()]
+    .slice(0, 16)
+    .map(([label, count]) => ({ value: label, label, count })));
+
+  renderFilterOptions('category', [...categoryCounts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, 24)
-    .map(([name]) => name);
+    .map(([label, count]) => ({ value: label, label, count })));
 
-  categoryContainer.innerHTML = [
-    '<button type="button" class="filter-btn active" data-category="all" aria-pressed="true">All</button>',
-    ...categories.map((name) => `<button type="button" class="filter-btn" data-category="${escapeHtml(name)}" aria-pressed="false">${escapeHtml(name)}</button>`)
-  ].join('');
-
-  siteContainer.innerHTML = [
-    '<button type="button" class="filter-btn active" data-site="all" aria-pressed="true">All Stores</button>',
-    ...sites.map((name) => `<button type="button" class="filter-btn" data-site="${escapeHtml(name)}" aria-pressed="false">${escapeHtml(name)}</button>`)
-  ].join('');
+  renderFilterOptions('site', [...siteCounts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 40)
+    .map(([label, count]) => ({ value: label, label, count })));
 }
 
-function initFilters() {
-  const categoryButtons = document.querySelectorAll('[data-category]');
-  const siteButtons = document.querySelectorAll('[data-site]');
-  const typeButtons = document.querySelectorAll('[data-type]');
-  const search = document.getElementById('searchInput');
-  const searchForm = search ? search.closest('form') : null;
-
-  categoryButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      toggleButton(btn);
-      applyFilters();
-    });
-  });
-
-  siteButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      toggleButton(btn);
-      applyFilters();
-    });
-  });
-
-  typeButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      toggleButton(btn);
-      applyFilters();
-    });
-  });
-
-  if (search) {
-    search.addEventListener('input', applyFilters);
-  }
-  if (searchForm) {
-    searchForm.addEventListener('submit', (event) => event.preventDefault());
-  }
-
-  const params = new URLSearchParams(location.search);
-  const q = params.get('q');
-  const categoryParam = params.get('category');
-  const siteParam = params.get('site');
-  const typeParam = params.get('type');
-  const category = categoryParam ? normalizeCategory(categoryParam) : '';
-  const site = siteParam ? normalizeMerchant(siteParam) : '';
-  const type = (typeParam === 'coupon' || typeParam === 'deal') ? typeParam : '';
-
-  if (search && q) search.value = q;
-
-  if (category) {
-    const btn = document.querySelector(`[data-category="${cssEscape(category)}"]`);
-    if (btn) {
-      document.querySelectorAll('[data-category]').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-  } else {
-    const allCategory = document.querySelector('[data-category="all"]');
-    if (allCategory) allCategory.classList.add('active');
-  }
-
-  if (site) {
-    const btn = document.querySelector(`[data-site="${cssEscape(site)}"]`);
-    if (btn) {
-      document.querySelectorAll('[data-site]').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-  } else {
-    const allSite = document.querySelector('[data-site="all"]');
-    if (allSite) allSite.classList.add('active');
-  }
-
-  if (type) {
-    const btn = document.querySelector(`[data-type="${cssEscape(type)}"]`);
-    if (btn) {
-      document.querySelectorAll('[data-type]').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-  } else {
-    const allType = document.querySelector('[data-type="all"]');
-    if (allType) allType.classList.add('active');
-  }
-
-  syncFilterPressedState();
-  applyFilters();
-}
-
-function syncFilterPressedState() {
-  document.querySelectorAll('.filter-btn[data-category], .filter-btn[data-site], .filter-btn[data-type]').forEach((btn) => {
-    btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
+function closeAllDropdowns() {
+  document.querySelectorAll('.filter-dropdown').forEach((dd) => {
+    dd.classList.remove('is-open');
+    const trigger = dd.querySelector('.filter-trigger');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    const panel = dd.querySelector('.filter-panel');
+    if (panel) panel.hidden = true;
   });
 }
 
-function toggleButton(button) {
-  const group = button.dataset.category !== undefined ? 'category' : (button.dataset.type !== undefined ? 'type' : 'site');
-  document.querySelectorAll(`[data-${group}]`).forEach((btn) => {
-    btn.classList.remove('active');
-    btn.setAttribute('aria-pressed', 'false');
+function updateFilterSummary() {
+  document.querySelectorAll('.filter-dropdown').forEach((dd) => {
+    const trigger = dd.querySelector('.filter-trigger');
+    const count = dd.querySelectorAll('.filter-panel input:checked').length;
+    const badge = trigger ? trigger.querySelector('.filter-count') : null;
+    if (badge) { badge.hidden = count === 0; badge.textContent = String(count); }
+    if (trigger) trigger.classList.toggle('has-selection', count > 0);
   });
-  button.classList.add('active');
-  button.setAttribute('aria-pressed', 'true');
+  const clear = document.getElementById('clear-filters');
+  if (clear) clear.hidden = !document.querySelector('.filter-panel input:checked');
+}
+
+function getCheckedValues(group) {
+  return [...document.querySelectorAll(`#filter-${group} input[type="checkbox"]:checked`)].map((cb) => cb.value);
 }
 
 function getFilterState() {
-  const activeCategory = document.querySelector('[data-category].active')?.dataset.category || '';
-  const activeSite = document.querySelector('[data-site].active')?.dataset.site || '';
-  const activeType = document.querySelector('[data-type].active')?.dataset.type || '';
-  const query = document.getElementById('searchInput')?.value.trim().toLowerCase() || '';
-  return { activeCategory, activeSite, activeType, query };
+  const searchInput = document.getElementById('searchInput');
+  return {
+    categories: getCheckedValues('category'),
+    sites: getCheckedValues('site'),
+    types: getCheckedValues('type'),
+    tags: getCheckedValues('tag'),
+    query: searchInput?.value.trim().toLowerCase() || '',
+    queryRaw: searchInput?.value.trim() || ''
+  };
+}
+
+function syncFilterUrl(state) {
+  if (!window.history || typeof window.history.replaceState !== 'function') return;
+  try {
+    const url = new URL(location.href);
+    const params = { category: state.categories, site: state.sites, type: state.types, tag: state.tags };
+    Object.entries(params).forEach(([key, values]) => {
+      if (values.length) url.searchParams.set(key, values.join(','));
+      else url.searchParams.delete(key);
+    });
+    if (state.queryRaw) url.searchParams.set('q', state.queryRaw);
+    else url.searchParams.delete('q');
+    window.history.replaceState(null, '', url.pathname + url.search);
+  } catch (_) { /* ignore unsupported environments */ }
 }
 
 function applyFilters() {
-  const { activeCategory, activeSite, activeType, query } = getFilterState();
+  currentPage = 1;
+  const state = getFilterState();
+  const { categories, sites, types, tags, query } = state;
+  syncFilterUrl(state);
   const filtered = deals.filter((deal) => {
     const dealCategory = normalizeCategory(deal.category);
     const dealMerchant = normalizeMerchant(deal.merchant || deal.site);
     const dealType = deal.offerType || (deal.couponCode ? 'coupon' : 'deal');
-    if (activeCategory && activeCategory !== 'all' && dealCategory !== activeCategory) return false;
-    if (activeSite && activeSite !== 'all' && dealMerchant !== activeSite) return false;
-    if (activeType && activeType !== 'all' && dealType !== activeType) return false;
+    if (categories.length && !categories.includes(dealCategory)) return false;
+    if (sites.length && !sites.includes(dealMerchant)) return false;
+    if (types.length && !types.includes(dealType)) return false;
+    if (tags.length && !tags.some((tag) => dealAllTags(deal).includes(tag))) return false;
     if (query) {
-      const haystack = `${deal.title} ${deal.description} ${dealCategory} ${dealMerchant} ${deal.couponCode || ''} ${dealType}`.toLowerCase();
+      const haystack = `${deal.title} ${deal.description} ${dealCategory} ${dealMerchant} ${deal.couponCode || ''} ${dealType} ${dealAllTags(deal).join(' ')}`.toLowerCase();
       if (!haystack.includes(query)) return false;
     }
     return true;
@@ -392,6 +453,100 @@ function applyFilters() {
   renderDeals('deals-grid', filtered);
 }
 
+function initFilters() {
+  const search = document.getElementById('searchInput');
+  const searchForm = search ? search.closest('form') : null;
+
+  document.querySelectorAll('.filter-dropdown').forEach((dd) => {
+    const trigger = dd.querySelector('.filter-trigger');
+    if (!trigger) return;
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = dd.classList.contains('is-open');
+      closeAllDropdowns();
+      if (!isOpen) {
+        dd.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+        const panel = dd.querySelector('.filter-panel');
+        if (panel) {
+          panel.hidden = false;
+          panel.classList.remove('align-right', 'drop-up');
+          let rect = panel.getBoundingClientRect();
+          if (rect.right > window.innerWidth - 12) {
+            panel.classList.add('align-right');
+            rect = panel.getBoundingClientRect();
+          }
+          const triggerRect = trigger.getBoundingClientRect();
+          if (rect.bottom > window.innerHeight - 12 && triggerRect.top > rect.height + 12) {
+            panel.classList.add('drop-up');
+          }
+        }
+      }
+    });
+  });
+
+  document.querySelectorAll('.filter-panel input[type="checkbox"]').forEach((cb) => {
+    cb.addEventListener('change', () => {
+      updateFilterSummary();
+      applyFilters();
+    });
+  });
+
+  const clear = document.getElementById('clear-filters');
+  if (clear) {
+    clear.addEventListener('click', () => {
+      document.querySelectorAll('.filter-panel input[type="checkbox"]').forEach((cb) => { cb.checked = false; });
+      updateFilterSummary();
+      applyFilters();
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.filter-dropdown')) closeAllDropdowns();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeAllDropdowns();
+  });
+
+  if (search) search.addEventListener('input', applyFilters);
+  if (searchForm) searchForm.addEventListener('submit', (event) => event.preventDefault());
+
+  const pager = document.getElementById('pagination');
+  if (pager) {
+    pager.addEventListener('click', (event) => {
+      const btn = event.target.closest('[data-page]');
+      if (!btn) return;
+      const raw = btn.dataset.page;
+      const total = Math.max(1, Math.ceil(filteredDeals.length / DEALS_PER_PAGE));
+      if (raw === 'prev') currentPage = Math.max(1, currentPage - 1);
+      else if (raw === 'next') currentPage = Math.min(total, currentPage + 1);
+      else currentPage = Number(raw) || 1;
+      renderDeals('deals-grid', filteredDeals);
+      const grid = document.getElementById('deals-grid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  const params = new URLSearchParams(location.search);
+  const q = params.get('q');
+  if (search && q) search.value = q;
+
+  const setChecked = (group, raw, normalizer) => {
+    if (!raw) return;
+    raw.split(',').map((v) => v.trim()).filter(Boolean).forEach((value) => {
+      const normalized = normalizer ? normalizer(value) : value;
+      const cb = document.querySelector(`#filter-${group} input[value="${cssEscape(normalized)}"]`);
+      if (cb) cb.checked = true;
+    });
+  };
+  setChecked('category', params.get('category'), normalizeCategory);
+  setChecked('site', params.get('site'), normalizeMerchant);
+  setChecked('type', params.get('type'));
+  setChecked('tag', params.get('tag'));
+
+  updateFilterSummary();
+  applyFilters();
+}
 function renderDealDetail() {
   const container = document.getElementById('deal-detail');
   if (!container) return;
@@ -406,40 +561,59 @@ function renderDealDetail() {
   }
 
   const expired = isExpired(deal);
-  const hasPrice = deal.price && deal.price > 0;
-  const hasMrp = deal.mrp && deal.mrp > 0;
-  const hasDiscount = deal.discount && deal.discount > 0;
+  const price = deal.discountPrice ?? deal.price;
+  const mrp = deal.originalPrice ?? deal.mrp;
+  const percentOff = deal.percentOff ?? deal.discount;
+  const hasPrice = price && price > 0;
+  const hasMrp = mrp && mrp > 0;
+  const hasDiscount = percentOff && percentOff > 0;
   const merchant = normalizeMerchant(deal.merchant || deal.site);
   const category = normalizeCategory(deal.category);
   const coupon = deal.couponCode && deal.couponCode.trim() ? deal.couponCode.trim() : null;
-  const imageUrl = sanitizeUrl(deal.image) || PLACEHOLDER_IMAGE;
   const buyLink = sanitizeUrl(deal.buyLink);
+  const endDate = formatDate(deal.endDate);
+  const startDate = formatDate(deal.startDate);
+  const domain = merchantDomain(deal);
   const buyAction = buyLink
-    ? `<a class="buy-btn" href="${escapeHtml(buyLink)}" target="_blank" rel="nofollow sponsored noopener noreferrer">${expired ? 'View offer' : 'Buy Now'}</a>`
+    ? `<a class="buy-btn" href="${escapeHtml(buyLink)}" target="_blank" rel="nofollow sponsored noopener noreferrer">${expired ? 'View offer' : 'Buy Now'} <span aria-hidden="true">&rarr;</span></a>`
     : `<span class="buy-btn buy-btn-disabled" aria-disabled="true">Link unavailable</span>`;
 
   container.innerHTML = `
     <article class="deal-detail-card">
-      <div class="image-wrapper">
-        <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(deal.title)}" loading="lazy" width="800" height="800" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}'">
+      <div class="detail-head">
+        <div class="detail-logo">${merchantIcon(deal)}</div>
+        <div class="detail-head-main">
+          <div class="deal-topline">
+            <span class="deal-cat">${escapeHtml(category)}</span>
+            <span class="deal-merchant">${escapeHtml(merchant)}</span>
+            ${deal.offerType ? `<span class="type-badge ${deal.offerType}">${deal.offerType === 'coupon' ? 'Coupon' : 'Deal'}</span>` : ''}
+          </div>
+          <h1 class="deal-title">${escapeHtml(deal.title)}</h1>
+          <div class="detail-dates">
+            ${startDate ? `<span>Starts ${escapeHtml(startDate)}</span>` : ''}
+            ${endDate ? `<span>Ends ${escapeHtml(endDate)}</span>` : ''}
+            ${expired ? '<span class="is-expired">Expired</span>' : '<span class="is-live">Live offer</span>'}
+          </div>
+        </div>
       </div>
-      <h1 class="deal-title">${escapeHtml(deal.title)}</h1>
-      <div class="deal-site">${escapeHtml(category)} · ${escapeHtml(merchant)}</div>
-      ${hasPrice || hasMrp ? `
-      <div class="deal-price-row">
-        ${hasPrice ? `<span class="deal-price">${formatPrice(deal.price)}</span>` : ''}
-        ${hasMrp ? `<span class="deal-mrp">${formatPrice(deal.mrp)}</span>` : ''}
-        ${hasDiscount ? `<span class="deal-discount">${escapeHtml(deal.discount + '% off')}</span>` : ''}
-      </div>` : ''}
-      <p class="deal-description">${escapeHtml(deal.description)}</p>
-      ${Array.isArray(deal.tags) && deal.tags.length ? `<div class="tag-row detail-tags">${deal.tags.map((tag) => `<span class="tag-pill">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
-      <div class="deal-coupon">
-        ${coupon
-          ? `Use coupon code <strong>${escapeHtml(coupon)}</strong> for additional savings.`
-          : 'No coupon needed — the discount is already applied.'}
-      </div>
-      <div class="deal-actions">
-        ${buyAction}
+
+      <div class="detail-body">
+        ${hasPrice || hasMrp ? `
+        <div class="deal-price-row">
+          ${hasPrice ? `<span class="deal-price">${formatPrice(price)}</span>` : ''}
+          ${hasMrp ? `<span class="deal-mrp">${formatPrice(mrp)}</span>` : ''}
+          ${hasDiscount ? `<span class="deal-discount">${escapeHtml(Math.round(percentOff) + '% off')}</span>` : ''}
+        </div>` : ''}
+        <p class="deal-description">${escapeHtml(deal.description)}</p>
+        ${dealAllTags(deal).length ? `<div class="tag-row detail-tags">${dealAllTags(deal).map((tag) => `<span class="tag-pill ${tag === 'Ends soon' ? 'tag-soon' : (tag === 'New' ? 'tag-new' : '')}">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+        <div class="deal-coupon">
+          ${coupon
+            ? `Use coupon code <strong>${escapeHtml(coupon)}</strong> for additional savings.`
+            : 'No coupon needed — the discount is already applied.'}
+        </div>
+        <div class="deal-actions">${buyAction}</div>
+        ${deal.terms ? `<section class="detail-section"><h2>Terms &amp; conditions</h2><p>${escapeHtml(deal.terms)}</p></section>` : ''}
+        ${domain ? `<section class="detail-section"><h2>About ${escapeHtml(merchant)}</h2><p>${escapeHtml(merchant)} is an online retailer offering deals through GrabOffer. Offers are subject to availability and the vendor's terms.</p><a class="vendor-link" href="https://${escapeHtml(domain)}" target="_blank" rel="noopener noreferrer nofollow">Visit ${escapeHtml(domain)} &rarr;</a></section>` : ''}
       </div>
     </article>
   `;
@@ -460,11 +634,10 @@ function renderDealDetail() {
     '@type': 'Product',
     name: deal.title,
     description: deal.description,
-    image: imageUrl,
     sku: String(deal.id || ''),
     offers: {
       '@type': 'Offer',
-      price: hasPrice ? Number(deal.price) : 0,
+      price: hasPrice ? Number(price) : 0,
       priceCurrency: 'INR',
       availability: expired ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
       url: buyLink || undefined,
@@ -478,6 +651,23 @@ function renderDealDetail() {
   script.type = 'application/ld+json';
   script.textContent = JSON.stringify(schema);
   document.head.appendChild(script);
+}
+
+function initIndexPagination() {
+  const pager = document.getElementById('pagination');
+  if (!pager) return;
+  pager.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-page]');
+    if (!btn) return;
+    const raw = btn.dataset.page;
+    const total = Math.max(1, Math.ceil(deals.length / DEALS_PER_PAGE));
+    if (raw === 'prev') currentPage = Math.max(1, currentPage - 1);
+    else if (raw === 'next') currentPage = Math.min(total, currentPage + 1);
+    else currentPage = Number(raw) || 1;
+    renderDeals('featured-deals', deals);
+    const grid = document.getElementById('featured-deals');
+    if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
 }
 
 function initNewsletterForms() {

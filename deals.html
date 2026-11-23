@@ -36,16 +36,38 @@
         <form class="search-form" style="margin-top:0; flex:1; max-width:480px;" role="search" action="deals.html" method="get">
           <input type="search" id="searchInput" name="q" placeholder="Search deals, brands, or coupons..." aria-label="Search deals" />
         </form>
-        <div class="u-flex" id="type-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Offer type filter"><button type="button" class="filter-btn active" data-type="all" aria-pressed="true">All Offers</button><button type="button" class="filter-btn" data-type="coupon" aria-pressed="false">Coupons</button><button type="button" class="filter-btn" data-type="deal" aria-pressed="false">Deals</button></div><div class="u-flex" id="category-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Category filter">
-          <button type="button" class="filter-btn active" data-category="all" aria-pressed="true">All</button>
-        </div>
-        <div class="u-flex" id="site-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Store filter">
-          <button type="button" class="filter-btn active" data-site="all" aria-pressed="true">All Stores</button>
+        <div class="filter-bar" aria-label="Deal filters">
+          <div class="filter-dropdown" id="filter-type" data-filter="type">
+            <button type="button" class="filter-trigger" aria-expanded="false" aria-haspopup="true">
+              <span>Offer type</span><span class="filter-count" hidden>0</span><span class="filter-caret" aria-hidden="true"></span>
+            </button>
+            <div class="filter-panel" hidden></div>
+          </div>
+          <div class="filter-dropdown" id="filter-tag" data-filter="tag">
+            <button type="button" class="filter-trigger" aria-expanded="false" aria-haspopup="true">
+              <span>Topic</span><span class="filter-count" hidden>0</span><span class="filter-caret" aria-hidden="true"></span>
+            </button>
+            <div class="filter-panel" hidden></div>
+          </div>
+          <div class="filter-dropdown" id="filter-category" data-filter="category">
+            <button type="button" class="filter-trigger" aria-expanded="false" aria-haspopup="true">
+              <span>Category</span><span class="filter-count" hidden>0</span><span class="filter-caret" aria-hidden="true"></span>
+            </button>
+            <div class="filter-panel" hidden></div>
+          </div>
+          <div class="filter-dropdown" id="filter-site" data-filter="site">
+            <button type="button" class="filter-trigger" aria-expanded="false" aria-haspopup="true">
+              <span>Store</span><span class="filter-count" hidden>0</span><span class="filter-caret" aria-hidden="true"></span>
+            </button>
+            <div class="filter-panel" hidden></div>
+          </div>
+          <button type="button" class="filter-clear" id="clear-filters" hidden>Clear all</button>
         </div>
       </div>
       <div class="featured-deals-grid" id="deals-grid">
         <p class="u-text-center u-text-sm">Loading deals…</p>
       </div>
+      <div id="pagination" class="pagination" aria-live="polite"></div>
     </div>
   </section>
 
