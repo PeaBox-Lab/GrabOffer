@@ -1,7 +1,7 @@
 {
   "name": "graboffer",
   "version": "1.0.0",
-  "description": "Best deals and coupons aggregator for India — static site deployable on GitHub Pages or Cloudflare Pages",
+  "description": "Global deals and coupons aggregator — static frontend with Cloudflare Pages Functions and Cuelinks API",
   "private": true,
   "scripts": {
     "start": "npx http-server -p 5000",

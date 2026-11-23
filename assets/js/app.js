@@ -1,5 +1,7 @@
 // GrabOffer — vanilla JS app
 const DEALS_URL = 'data/deals.json';
+const OFFERS_API = '/api/offers';
+let useLiveApi = false;
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600"%3E%3Crect width="600" height="600" fill="%23e2e8f0"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%2364748b" font-family="Arial" font-size="28"%3ENo Image%3C/text%3E%3C/svg%3E';
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -107,7 +109,7 @@ function dealCardTemplate(deal) {
     <article class="deal-card" data-deal-id="${escapeHtml(deal.id)}">
       <div class="image-wrapper">
         <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(deal.title)}" loading="lazy" width="600" height="600" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}'">
-        ${hasDiscount ? `<span class="badge-discount">${escapeHtml(deal.discount + '% off')}</span>` : ''}
+        ${deal.offerType ? `<span class="badge-discount">${escapeHtml(deal.offerType === 'coupon' ? 'Coupon' : 'Deal')}</span>` : (hasDiscount ? `<span class="badge-discount">${escapeHtml(deal.discount + '% off')}</span>` : '')}
         <span class="badge-site">${escapeHtml(merchant)}</span>
       </div>
       <div class="card-body">
@@ -142,12 +144,64 @@ function renderDeals(containerId, deals) {
 
 let deals = [];
 
+async function fetchLiveOffers() {
+  const params = new URLSearchParams(location.search);
+  const q = params.get('q') || '';
+  const type = params.get('type') || '';
+  const apiParams = new URLSearchParams({ per_page: '60', sort: 'created_at', order: 'desc' });
+  if (q) apiParams.set('q', q);
+  if (type === 'coupon' || type === 'deal') apiParams.set('offer_type', type);
+  const res = await fetch(`${OFFERS_API}?${apiParams.toString()}`, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error(`API HTTP ${res.status}`);
+  const data = await res.json();
+  const rows = Array.isArray(data.data) ? data.data : [];
+  return rows.map((offer) => {
+    const category = normalizeCategory(offer.categories?.[0]?.name || 'Others');
+    const merchant = normalizeMerchant(offer.campaign_name || 'Store');
+    return {
+      id: String(offer.id),
+      title: String(offer.title || ''),
+      merchant,
+      category,
+      tags: Array.isArray(offer.categories) ? [category, merchant, offer.offer_type === 'coupon' ? 'Coupon Code' : 'Deal'].filter(Boolean).slice(0,6) : [category],
+      description: String(offer.description || ''),
+      terms: String(offer.terms || ''),
+      couponCode: String(offer.coupon_code || '').trim(),
+      offerType: offer.offer_type === 'coupon' ? 'coupon' : 'deal',
+      buyLink: String(offer.tracking_url || ''),
+      status: String(offer.status || 'live').toLowerCase() === 'live' ? 'live' : 'expired',
+      startDate: String(offer.start_date || ''),
+      endDate: String(offer.end_date || ''),
+      image: '',
+      imageSource: 'none',
+      percentOff: offer.percent_off ?? null,
+      originalPrice: offer.original_price ?? null,
+      discountPrice: offer.discount_price ?? null,
+    };
+  });
+}
+
 async function loadDeals() {
   try {
-    const response = await fetch(DEALS_URL);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    deals = data.deals || [];
+    // Prefer live API when deployed with Cloudflare Functions
+    if (location.protocol !== 'file:') {
+      try {
+        deals = await fetchLiveOffers();
+        useLiveApi = true;
+      } catch (apiError) {
+        console.warn('Live API unavailable, falling back to local data:', apiError);
+        const response = await fetch(DEALS_URL);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        deals = data.deals || [];
+        useLiveApi = false;
+      }
+    } else {
+      const response = await fetch(DEALS_URL);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      deals = data.deals || [];
+    }
   } catch (error) {
     console.error('Failed to load deals:', error);
     deals = [];
@@ -216,6 +270,7 @@ function renderFilters() {
 function initFilters() {
   const categoryButtons = document.querySelectorAll('[data-category]');
   const siteButtons = document.querySelectorAll('[data-site]');
+  const typeButtons = document.querySelectorAll('[data-type]');
   const search = document.getElementById('searchInput');
   const searchForm = search ? search.closest('form') : null;
 
@@ -233,6 +288,13 @@ function initFilters() {
     });
   });
 
+  typeButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      toggleButton(btn);
+      applyFilters();
+    });
+  });
+
   if (search) {
     search.addEventListener('input', applyFilters);
   }
@@ -244,8 +306,10 @@ function initFilters() {
   const q = params.get('q');
   const categoryParam = params.get('category');
   const siteParam = params.get('site');
+  const typeParam = params.get('type');
   const category = categoryParam ? normalizeCategory(categoryParam) : '';
   const site = siteParam ? normalizeMerchant(siteParam) : '';
+  const type = (typeParam === 'coupon' || typeParam === 'deal') ? typeParam : '';
 
   if (search && q) search.value = q;
 
@@ -271,18 +335,29 @@ function initFilters() {
     if (allSite) allSite.classList.add('active');
   }
 
+  if (type) {
+    const btn = document.querySelector(`[data-type="${cssEscape(type)}"]`);
+    if (btn) {
+      document.querySelectorAll('[data-type]').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  } else {
+    const allType = document.querySelector('[data-type="all"]');
+    if (allType) allType.classList.add('active');
+  }
+
   syncFilterPressedState();
   applyFilters();
 }
 
 function syncFilterPressedState() {
-  document.querySelectorAll('.filter-btn[data-category], .filter-btn[data-site]').forEach((btn) => {
+  document.querySelectorAll('.filter-btn[data-category], .filter-btn[data-site], .filter-btn[data-type]').forEach((btn) => {
     btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
   });
 }
 
 function toggleButton(button) {
-  const group = button.dataset.category !== undefined ? 'category' : 'site';
+  const group = button.dataset.category !== undefined ? 'category' : (button.dataset.type !== undefined ? 'type' : 'site');
   document.querySelectorAll(`[data-${group}]`).forEach((btn) => {
     btn.classList.remove('active');
     btn.setAttribute('aria-pressed', 'false');
@@ -294,19 +369,22 @@ function toggleButton(button) {
 function getFilterState() {
   const activeCategory = document.querySelector('[data-category].active')?.dataset.category || '';
   const activeSite = document.querySelector('[data-site].active')?.dataset.site || '';
+  const activeType = document.querySelector('[data-type].active')?.dataset.type || '';
   const query = document.getElementById('searchInput')?.value.trim().toLowerCase() || '';
-  return { activeCategory, activeSite, query };
+  return { activeCategory, activeSite, activeType, query };
 }
 
 function applyFilters() {
-  const { activeCategory, activeSite, query } = getFilterState();
+  const { activeCategory, activeSite, activeType, query } = getFilterState();
   const filtered = deals.filter((deal) => {
     const dealCategory = normalizeCategory(deal.category);
     const dealMerchant = normalizeMerchant(deal.merchant || deal.site);
+    const dealType = deal.offerType || (deal.couponCode ? 'coupon' : 'deal');
     if (activeCategory && activeCategory !== 'all' && dealCategory !== activeCategory) return false;
     if (activeSite && activeSite !== 'all' && dealMerchant !== activeSite) return false;
+    if (activeType && activeType !== 'all' && dealType !== activeType) return false;
     if (query) {
-      const haystack = `${deal.title} ${deal.description} ${dealCategory} ${dealMerchant} ${deal.couponCode || ''}`.toLowerCase();
+      const haystack = `${deal.title} ${deal.description} ${dealCategory} ${dealMerchant} ${deal.couponCode || ''} ${dealType}`.toLowerCase();
       if (!haystack.includes(query)) return false;
     }
     return true;
@@ -354,6 +432,7 @@ function renderDealDetail() {
         ${hasDiscount ? `<span class="deal-discount">${escapeHtml(deal.discount + '% off')}</span>` : ''}
       </div>` : ''}
       <p class="deal-description">${escapeHtml(deal.description)}</p>
+      ${Array.isArray(deal.tags) && deal.tags.length ? `<div class="tag-row detail-tags">${deal.tags.map((tag) => `<span class="tag-pill">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
       <div class="deal-coupon">
         ${coupon
           ? `Use coupon code <strong>${escapeHtml(coupon)}</strong> for additional savings.`

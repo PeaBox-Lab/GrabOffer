@@ -5,3 +5,8 @@ Thumbs.db
 *.log
 dist/
 build/
+.dev.vars
+.env
+.env.*
+
+v1-old/

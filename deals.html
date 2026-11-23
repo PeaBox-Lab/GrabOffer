@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Browse all deals and coupons from top Indian shopping sites. Filter by category, store, or search for your favorite products." />
-  <meta name="keywords" content="all deals India, coupons, discounts, Amazon deals, Flipkart offers, Myntra coupons, online shopping offers" />
+  <meta name="description" content="Browse deals and coupons from top brands worldwide. Filter by category, store, type, or search." />
+  <meta name="keywords" content="global deals, coupons, promo codes, discounts, online shopping offers" />
   <meta property="og:title" content="All Deals & Coupons — GrabOffer" />
   <meta property="og:description" content="Browse all deals and coupons from top Indian shopping sites. Filter by category, store, or search." />
   <meta property="og:type" content="website" />
@@ -36,7 +36,7 @@
         <form class="search-form" style="margin-top:0; flex:1; max-width:480px;" role="search" action="deals.html" method="get">
           <input type="search" id="searchInput" name="q" placeholder="Search deals, brands, or coupons..." aria-label="Search deals" />
         </form>
-        <div class="u-flex" id="category-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Category filter">
+        <div class="u-flex" id="type-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Offer type filter"><button type="button" class="filter-btn active" data-type="all" aria-pressed="true">All Offers</button><button type="button" class="filter-btn" data-type="coupon" aria-pressed="false">Coupons</button><button type="button" class="filter-btn" data-type="deal" aria-pressed="false">Deals</button></div><div class="u-flex" id="category-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Category filter">
           <button type="button" class="filter-btn active" data-category="all" aria-pressed="true">All</button>
         </div>
         <div class="u-flex" id="site-filters" style="gap:.5rem; flex-wrap:wrap;" aria-label="Store filter">
@@ -53,14 +53,14 @@
     <div class="container">
       <div>
         <div class="logo">GrabOffer</div>
-        <p class="u-text-sm">India's trusted deal aggregator — find the best prices and coupons across top shopping sites.</p>
+        <p class="u-text-sm">Your trusted deal aggregator — discover verified deals and coupons from top brands worldwide.</p>
       </div>
       <div>
         <h3>Browse</h3>
         <ul class="footer-links">
           <li><a href="index.html">Home</a></li>
           <li><a href="deals.html">All Deals</a></li>
-          <li><a href="deals.html?category=Mobiles">Mobiles</a></li>
+          <li><a href="deals.html?category=Mobiles%20%26%20Accessories">Mobiles &amp; Accessories</a></li>
           <li><a href="deals.html?category=Electronics">Electronics</a></li>
         </ul>
       </div>
