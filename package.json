@@ -1,0 +1,14 @@
+{
+  "name": "graboffer",
+  "version": "1.0.0",
+  "description": "Best deals and coupons aggregator for India — static site deployable on GitHub Pages or Cloudflare Pages",
+  "private": true,
+  "scripts": {
+    "start": "npx http-server -p 5000",
+    "deploy:pages": "echo \"Push to GitHub and enable GitHub Pages in repository settings\""
+  },
+  "devDependencies": {
+    "csv-parse": "^7.0.3",
+    "http-server": "^14.1.1"
+  }
+}

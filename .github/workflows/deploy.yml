@@ -1,0 +1,19 @@
+name: Deploy Static Site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify build
+        run: |
+          test -f index.html
+          test -f deals.html
+          test -f deal-detail.html
+          test -f data/deals.json
+          echo "Static site verified."

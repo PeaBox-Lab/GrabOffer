@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://graboffer.github.io/sitemap.xml
