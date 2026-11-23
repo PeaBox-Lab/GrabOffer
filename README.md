@@ -1,5 +1,5 @@
 # GrabOffer
-
+##
 Static deal aggregator for India. Deployable on GitHub Pages or Cloudflare Pages with no build step.
 
 ## Structure
