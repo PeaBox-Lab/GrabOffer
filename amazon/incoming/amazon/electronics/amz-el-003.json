@@ -1,0 +1,44 @@
+{
+  "id": "amz-el-003",
+  "title": "Samsung Galaxy F14 5G - 6GB RAM, 128GB Storage",
+  "description": "Samsung Galaxy F14 5G features a 6.7-inch PLS TFT display, 50 MP main camera, MediaTek Dimensity 700 processor and 5000 mAh battery with 25W fast charging.",
+  "price": 13499,
+  "mrp": 16999,
+  "discount": 21,
+  "rating": 4,
+  "reviewCount": 28000,
+  "reviews": [
+    {
+      "author": "Arjun D.",
+      "rating": 5,
+      "title": "Samsung quality at this price",
+      "body": "Display is bright and colour accurate. One UI is smooth and lag-free."
+    },
+    {
+      "author": "Meera V.",
+      "rating": 4,
+      "title": "Good 5G phone",
+      "body": "Battery lasts a full day of mixed use. Camera clicks good photos in daylight."
+    },
+    {
+      "author": "Kartik N.",
+      "rating": 3,
+      "title": "Average performance",
+      "body": "Heats up a bit during gaming. Software updates promised but slow to roll out."
+    }
+  ],
+  "specifications": {
+    "Display": "6.7-inch PLS TFT 120 Hz",
+    "Processor": "Dimensity 700",
+    "RAM": "6 GB",
+    "Storage": "128 GB",
+    "MainCamera": "50 MP",
+    "Battery": "5000 mAh, 25W charging"
+  },
+  "seller": "Amazon Retail",
+  "rank": 3,
+  "category": "Electronics",
+  "subcategory": "Mobiles > Smartphones",
+  "buyLink": "https://www.amazon.in/dp/B08EFGHI90",
+  "image": "https://images-na.ssl-images-amazon.com/images/I/51xxxxx.jpg"
+}

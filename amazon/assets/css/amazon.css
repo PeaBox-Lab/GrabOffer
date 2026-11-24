@@ -1,0 +1,120 @@
+/* ============================================================
+   GrabOffer × Amazon.in store theme
+   Inherits the parent GrabOffer stylesheet (assets/css/style.css)
+   and layers the Amazon.in online-shopping color theme on top.
+   ============================================================ */
+
+:root {
+  --bg: #f3f2f1;
+  --surface: #ffffff;
+  --surface-alt: #f0efec;
+  --text: #0f1111;
+  --muted: #565959;
+  --border: #ddd;
+  --primary: #232f3e;
+  --primary-hover: #141a1f;
+  --accent: #ff9900;
+  --accent-hover: #fa8900;
+  --accent-soft: #fff6e8;
+  --warn: #b12704;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --shadow: 0 10px 30px rgba(15, 17, 17, 0.06);
+  --max-width: 1180px;
+}
+
+/* Amazon.in (India) header treatment */
+header {
+  background: #131921;
+  border-bottom: 1px solid #0e141b;
+}
+header .container {
+  padding: 0.85rem 0;
+}
+header .logo {
+  color: #ff9900;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+header .nav-links a {
+  color: #e3e6e6;
+}
+header .nav-links a:hover,
+header .nav-links a.active {
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Amazon-style hero */
+.amazon-hero {
+  padding: 4rem 0 3rem;
+  background: linear-gradient(180deg, #131921 0%, #1a2530 100%);
+  border-bottom: 1px solid #0e141b;
+  color: #fff;
+}
+.amazon-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.75rem;
+}
+.amazon-hero p {
+  max-width: 640px;
+  color: #c8cdd3;
+  font-size: 1.05rem;
+}
+
+/* Amazon buy button */
+.buy-btn {
+  background: var(--accent);
+  color: #0f1111;
+}
+.buy-btn:hover {
+  background: var(--accent-hover);
+}
+.buy-btn-disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Amazon badges */
+.badge-discount { left: 0.75rem; background: #fff; color: var(--warn); border: 1px solid var(--border); }
+.badge-site { right: 0.75rem; background: rgba(19, 25, 33, 0.85); color: #fff; }
+
+/* Amazon price emphasis */
+.price { color: #0f1111; }
+.discount-text { color: var(--warn); }
+
+/* Amazon search */
+.search-form { border: 2px solid var(--accent); border-radius: 999px; box-shadow: none; }
+.search-form button { background: var(--accent); }
+
+/* Amazon product card tweaks */
+.deal-card:hover { border-color: #89959e; }
+.deal-cat { color: var(--primary); }
+.type-badge.deal { background: #e8f0fe; color: #0f6cbd; }
+.type-badge.coupon { background: #fff3e0; color: var(--warn); }
+.tag-pill { background: #e8f0fe; color: #0f6cbd; }
+.tag-soon { background: #fff3e0; color: var(--warn); }
+.tag-new { background: #e8f0fe; color: #0f6cbd; }
+
+/* Amazon detail layout extras */
+.deal-detail-card { border-radius: 12px; }
+.deal-price { color: #0f1111; }
+
+/* Category hero band */
+.category-hero {
+  padding: 2.75rem 0 2rem;
+  background: linear-gradient(180deg, #f3f2f1 0%, #ececea 100%);
+  border-bottom: 1px solid var(--border);
+}
+.category-hero h1 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+.category-hero p { color: var(--muted); max-width: 70ch; }
+
+/* Fresh-listing section headings */
+.fresh-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+.fresh-sub { color: var(--muted); font-size: 0.9rem; }
+
+/* Responsive tweaks for amazon theme */
+@media (max-width: 720px) {
+  header .container { flex-direction: column; align-items: flex-start; }
+  .amazon-hero { padding: 2.75rem 0 2rem; }
+}

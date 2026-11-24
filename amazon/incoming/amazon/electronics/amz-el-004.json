@@ -1,0 +1,43 @@
+{
+  "id": "amz-el-004",
+  "title": "Sony WH-CH520 Wireless Headphones",
+  "description": "Sony WH-CH520 wireless headphones with 30-hour battery life, lightweight foldable design, and clear hands-free calling with built-in microphone.",
+  "price": 2499,
+  "mrp": 3999,
+  "discount": 38,
+  "rating": 4.1,
+  "reviewCount": 35000,
+  "reviews": [
+    {
+      "author": "Neha P.",
+      "rating": 5,
+      "title": "Great bass for the price",
+      "body": "Sony sound signature is evident even at this price point. Comfortable for long listening sessions."
+    },
+    {
+      "author": "Rohit T.",
+      "rating": 4,
+      "title": "Good battery life",
+      "body": "30 hours is real. Quick charging works well. ANC is average but enough for office."
+    },
+    {
+      "author": "Simran K.",
+      "rating": 3,
+      "title": "Decent but could be better",
+      "body": "Sound is decent for casual music. Build feels mostly plastic but hinges are sturdy."
+    }
+  ],
+  "specifications": {
+    "Driver": "30 mm",
+    "Connectivity": "Bluetooth 5.3",
+    "Battery": "Up to 30 hours",
+    "Foldable": "Yes",
+    "Mic": "Yes with cVc noise cancellation"
+  },
+  "seller": "Sony India",
+  "rank": 4,
+  "category": "Electronics",
+  "subcategory": "Mobile Accessories > Headphones",
+  "buyLink": "https://www.amazon.in/dp/B08XYZ7890",
+  "image": "https://images-na.ssl-images-amazon.com/images/I/51xxxxx.jpg"
+}

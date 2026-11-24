@@ -1,0 +1,44 @@
+{
+  "id": "amz-el-006",
+  "title": "Apple MacBook Air M2 - 8GB RAM, 256GB SSD",
+  "description": "MacBook Air M2 chip with 8-core CPU, 8-core GPU, 8GB unified memory, 256GB SSD, 13.6-inch Liquid Retina display, backlit Magic Keyboard, all-day battery life up to 18 hours.",
+  "price": 84900,
+  "mrp": 99900,
+  "discount": 15,
+  "rating": 4.7,
+  "reviewCount": 62000,
+  "reviews": [
+    {
+      "author": "Amit R.",
+      "rating": 5,
+      "title": "Best laptop for productivity",
+      "body": "M2 chip is a beast for everyday tasks. Battery easily lasts a full work day. Fanless design is silent."
+    },
+    {
+      "author": "Sneha M.",
+      "rating": 4,
+      "title": "Premium build quality",
+      "body": "Thin and light design. Retina display is colour-accurate. macOS ecosystem is seamless."
+    },
+    {
+      "author": "Vikram J.",
+      "rating": 3,
+      "title": "Pricey but worth it",
+      "body": "Performance is excellent. Would like more ports and slightly brighter display outdoors."
+    }
+  ],
+  "specifications": {
+    "Chip": "Apple M2 (8-core CPU, 8-core GPU)",
+    "RAM": "8 GB",
+    "Storage": "256 GB SSD",
+    "Display": "13.6\" Liquid Retina",
+    "OS": "macOS Ventura",
+    "Warranty": "1 year Apple Care"
+  },
+  "seller": "Apple India",
+  "rank": 6,
+  "category": "Electronics",
+  "subcategory": "Laptops & Computers > Laptops",
+  "buyLink": "https://www.amazon.in/dp/B09GSSD4KL",
+  "image": "https://images-na.ssl-images-amazon.com/images/I/51xxxxx.jpg"
+}

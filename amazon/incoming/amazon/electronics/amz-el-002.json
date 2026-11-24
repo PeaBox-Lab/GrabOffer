@@ -1,0 +1,44 @@
+{
+  "id": "amz-el-002",
+  "title": "Redmi Note 13 Pro 5G - 8GB RAM, 256GB Storage",
+  "description": "Redmi Note 13 Pro 5G features a 120 Hz AMOLED display, 200 MP OIS main camera, Snapdragon 7s Gen 2 processor and 67 W turbo charging. Sleek design with Corning Gorilla Glass protection.",
+  "price": 26999,
+  "mrp": 29999,
+  "discount": 10,
+  "rating": 4.3,
+  "reviewCount": 45000,
+  "reviews": [
+    {
+      "author": "Sneha M.",
+      "rating": 5,
+      "title": "Excellent display",
+      "body": "AMOLED screen is vibrant and the camera clicks sharp photos in daylight."
+    },
+    {
+      "author": "Vikram J.",
+      "rating": 4,
+      "title": "Smooth performance",
+      "body": "Gaming and multitasking are lag-free. Battery lasts a full day."
+    },
+    {
+      "author": "Kavita L.",
+      "rating": 3,
+      "title": "Heats up slightly",
+      "body": "Phone gets warm during extended camera use."
+    }
+  ],
+  "specifications": {
+    "Display": "6.67\" AMOLED 120 Hz",
+    "Processor": "Snapdragon 7s Gen 2",
+    "RAM": "8 GB",
+    "Storage": "256 GB",
+    "MainCamera": "200 MP OIS",
+    "Battery": "5100 mAh, 67 W charging"
+  },
+  "seller": "Appario Retail",
+  "rank": 2,
+  "category": "Electronics",
+  "subcategory": "Mobiles > Smartphones",
+  "buyLink": "https://www.amazon.in/dp/B08ABCD567",
+  "image": "https://images-na.ssl-images-amazon.com/images/I/51xxxxx.jpg"
+}

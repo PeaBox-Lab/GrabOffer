@@ -1,0 +1,43 @@
+{
+  "id": "amz-el-001",
+  "title": "boAt Bassheads 102 in-Ear Wired Earphones with Mic",
+  "description": "boAt Bassheads 102 wired earphones deliver powerful bass with an in-line mic and remote control for hands-free calls. Lightweight in-ear design with silicone ear tips for a snug fit.",
+  "price": 299,
+  "mrp": 799,
+  "discount": 63,
+  "rating": 4.2,
+  "reviewCount": 124000,
+  "reviews": [
+    {
+      "author": "Rahul S.",
+      "rating": 5,
+      "title": "Amazing bass quality",
+      "body": "Best earphones under 500 rupees. Bass is deep and mic works perfectly for calls."
+    },
+    {
+      "author": "Priya K.",
+      "rating": 4,
+      "title": "Good value",
+      "body": "Build quality is decent for the price. Sound is clear and fits well."
+    },
+    {
+      "author": "Amit R.",
+      "rating": 3,
+      "title": "Average durability",
+      "body": "Sounds great initially but cable felt a bit thin after a month."
+    }
+  ],
+  "specifications": {
+    "Driver": "10 mm",
+    "Connectivity": "3.5 mm wired",
+    "Mic": "Yes with remote",
+    "EarTipMaterial": "Silicone",
+    "Warranty": "1 year"
+  },
+  "seller": "Cloudtail India",
+  "rank": 1,
+  "category": "Electronics",
+  "subcategory": "Mobile Accessories > Headphones",
+  "buyLink": "https://www.amazon.in/dp/B08XYZ1234",
+  "image": "https://images-na.ssl-images-amazon.com/images/I/51xxxxx.jpg"
+}
