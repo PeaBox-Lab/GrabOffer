@@ -1,0 +1,111 @@
+/* ============================================================
+   GrabOffer × Flipkart store theme
+   Inherits the parent GrabOffer stylesheet (assets/css/style.css)
+   and layers the Flipkart online-shopping color theme on top.
+   ============================================================ */
+
+:root {
+  --bg: #f8f8f8;
+  --surface: #ffffff;
+  --surface-alt: #f1f3f4;
+  --text: #111111;
+  --muted: #565959;
+  --border: #e8e8e8;
+  --primary: #2874f0;
+  --primary-hover: #1a5fd0;
+  --accent: #ffd814;
+  --accent-hover: #f5c400;
+  --accent-soft: #fff9e6;
+  --warn: #b12704;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --shadow: 0 10px 30px rgba(17, 17, 17, 0.06);
+  --max-width: 1180px;
+}
+
+/* Flipkart header treatment */
+header {
+  background: #2874f0;
+  border-bottom: 1px solid #111111;
+}
+header .container {
+  padding: 0.85rem 0;
+}
+header .logo {
+  color: #ffffff;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+header .logo span {
+  color: #ffd814;
+}
+header .nav-links a {
+  color: #dbe7ff;
+}
+header .nav-links a:hover,
+header .nav-links a.active {
+  color: #ffffff;
+  border-color: #ffd814;
+}
+
+/* Flipkart hero */
+.flipkart-hero {
+  padding: 4rem 0 3rem;
+  background: linear-gradient(180deg, #2874f0 0%, #1a5fd0 100%);
+  border-bottom: 1px solid #111111;
+  color: #ffffff;
+}
+.flipkart-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.75rem;
+}
+.flipkart-hero p {
+  max-width: 640px;
+  color: #dbe7ff;
+  font-size: 1.05rem;
+}
+
+/* Flipkart buy button */
+.buy-btn {
+  background: #ffd814;
+  color: #111111;
+}
+.buy-btn:hover {
+  background: #f5c400;
+}
+
+/* Flipkart badges / price emphasis */
+.badge-discount { left: 0.75rem; background: #fff; color: #b12704; border: 1px solid #e8e8e8; }
+.badge-site { right: 0.75rem; background: rgba(17, 17, 17, 0.85); color: #fff; }
+.price { color: #111111; }
+.discount-text { color: #b12704; }
+.type-badge.deal { background: #e8f0fe; color: #2874f0; }
+.type-badge.coupon { background: #fff3e0; color: #b12704; }
+
+/* Flipkart search */
+.search-form { border: 2px solid #ffd814; border-radius: 999px; box-shadow: none; }
+.search-form button { background: #ffd814; }
+
+/* Flipkart product card tweaks */
+.deal-card:hover { border-color: #89959e; }
+.deal-cat { color: #2874f0; }
+.fresh-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+.fresh-sub { color: #565959; font-size: 0.9rem; }
+
+/* Category hero band */
+.category-hero {
+  padding: 2.75rem 0 2rem;
+  background: linear-gradient(180deg, #f8f8f8 0%, #f1f3f4 100%);
+  border-bottom: 1px solid #e8e8e8;
+}
+.category-hero h1 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+.category-hero p { color: #565959; max-width: 70ch; }
+
+/* Responsive tweaks for flipkart theme */
+@media (max-width: 720px) {
+  header .container { flex-direction: column; align-items: flex-start; }
+  .flipkart-hero { padding: 2.75rem 0 2rem; }
+}
