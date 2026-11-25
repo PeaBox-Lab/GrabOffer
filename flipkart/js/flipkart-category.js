@@ -59,7 +59,7 @@
     const catName = cat ? cat.name : catSlug || 'Unknown';
     document.title = `GrabOffer Flipkart – ${catName} Best Sellers`;
     const h1 = document.querySelector('.category-hero h1');
-    if (h1) h1.textContent = `${MERCHANT} – ${catName} — Best Sellers (Rewritten)`;
+    if (h1) h1.textContent = `${catName} — Best Sellers`;
     const heroP = document.querySelector('.category-hero p');
     if (heroP) heroP.textContent = `We hand-pick the top-selling products from Flipkart, rewrite every listing in our own words, remix real user reviews into authentic summaries, and give you clean product pages with tracked affiliate links.`;
 

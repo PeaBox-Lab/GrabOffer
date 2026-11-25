@@ -77,11 +77,11 @@ for (const cat of data.categories) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="GrabOffer Flipkart – ${esc(cat.name)} best sellers. Rewritten listings with tracked affiliate links." />
+  <meta name="description" content="GrabOffer – ${esc(cat.name)} best sellers on Flipkart. Compare prices, specs, and buy links." />
   <meta property="og:title" content="GrabOffer Flipkart – ${esc(cat.name)} Best Sellers" />
-  <meta property="og:description" content="Top Flipkart best-seller products in the ${esc(cat.name)} category, rewritten and remixed with tracked affiliate buy links." />
+  <meta property="og:description" content="Top ${esc(cat.name)} products on Flipkart with prices, specs, and buy links." />
   <meta property="og:type" content="website" />
-  <title>GrabOffer Flipkart – ${esc(cat.name)} Best Sellers</title>
+  <title>GrabOffer – ${esc(cat.name)} Best Sellers</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232874f0'/%3E%3Ctext x='50' y='72' font-size='60' text-anchor='middle' fill='%23ffd814'%3EF%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="../../assets/css/style.css" />
   <link rel="stylesheet" href="../../assets/css/flipkart.css" />
@@ -104,8 +104,8 @@ for (const cat of data.categories) {
 
   <section class="category-hero">
     <div class="container">
-      <h1>Flipkart – ${esc(cat.name)} — Best Sellers (Rewritten)</h1>
-      <p>We hand-pick the top-selling products from Flipkart, rewrite every listing in our own words, remix real user reviews into authentic summaries, and give you clean product pages with tracked affiliate links.</p>
+      <h1>${esc(cat.name)} — Best Sellers</h1>
+      <p>Browse top-selling ${esc(cat.name)} products on Flipkart with clear details and quick buy links.</p>
       <div class="hero-stats">
         <div><div class="stat">${products.length}</div><div>Products</div></div>
       </div>
@@ -125,7 +125,7 @@ for (const cat of data.categories) {
     <div class="container">
       <div>
         <div class="logo">GrabOffer <span style="color:#ffd814;">Flipkart</span></div>
-        <p class="u-text-sm">Curated best-seller listings rewritten for clarity.</p>
+        <p class="u-text-sm">GrabOffer is an affiliate deals website. We may earn commission from qualifying purchases on partner e-commerce sites.</p>
       </div>
       <div>
         <h3>Categories</h3>
@@ -136,11 +136,11 @@ for (const cat of data.categories) {
       </div>
       <div>
         <h3>Affiliate</h3>
-        <p class="u-text-sm">All links include tracking ID <strong>${TRACKING_ID}</strong>.</p>
+        <p class="u-text-sm">GrabOffer is an affiliate deals website and partner of e-commerce sites. Prices and availability may change.</p>
       </div>
     </div>
     <div class="container">
-      <p class="copyright">© 2026 GrabOffer. Product data sourced from Flipkart best-seller lists. All listings rewritten. Affiliate tracking ID: <strong>${TRACKING_ID}</strong>.</p>
+      <p class="copyright">© 2026 GrabOffer. Deals and product listings are curated for convenience. GrabOffer is an affiliate partner of e-commerce sites and may earn commission from qualifying purchases.</p>
     </div>
   </footer>
 

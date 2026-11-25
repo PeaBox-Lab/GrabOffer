@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const root = resolve(__dirname, '..');
 
-const TRACKING_ID = 'iwebslog01-21';
+const TRACKING_ID = 'YOUR_AMAZON_TAG';
 
 function buildBuyLink(url) {
   const u = new URL(url);
@@ -70,7 +70,7 @@ for (const cat of data.categories) {
   <section class="amazon-hero">
     <div class="container">
       <h1>${esc(p.title)}</h1>
-      <p class="u-text-sm">Rewritten listing · affiliate tracking ID <strong>${TRACKING_ID}</strong></p>
+      <p class="u-text-sm">Product details, specifications, and buy link.</p>
     </div>
   </section>
 
@@ -117,7 +117,7 @@ for (const cat of data.categories) {
               <p class="u-text-sm" style="color:#565959;">— ${esc(r.author)}${r.verified ? ' · Verified Purchase' : ''}</p>
             </div>`).join('')}
           </section>` : ''}
-          <div class="deal-coupon">Seller: ${esc(p.seller || 'Amazon.in')} · Tracking: ${TRACKING_ID}</div>
+          <div class="deal-coupon">Seller: ${esc(p.seller || 'Amazon.in')}</div>
           <div class="deal-actions">
             <a class="buy-btn" href="${buildBuyLink(p.buyLink)}" target="_blank" rel="nofollow sponsored noopener noreferrer">Buy Now on Amazon <span aria-hidden="true">&rarr;</span></a>
           </div>
@@ -135,7 +135,7 @@ for (const cat of data.categories) {
     <div class="container">
       <div>
         <div class="logo">GrabOffer <span style="color:#ff9900;">Amazon.in</span></div>
-        <p class="u-text-sm">Curated best-seller listings rewritten for clarity.</p>
+        <p class="u-text-sm">GrabOffer is an affiliate deals website. We may earn commission from qualifying purchases on partner e-commerce sites.</p>
       </div>
       <div>
         <h3>Categories</h3>
@@ -146,11 +146,11 @@ for (const cat of data.categories) {
       </div>
       <div>
         <h3>Affiliate</h3>
-        <p class="u-text-sm">All links include tracking ID <strong>${TRACKING_ID}</strong>.</p>
+        <p class="u-text-sm">GrabOffer is an affiliate deals website and partner of e-commerce sites. Prices and availability may change.</p>
       </div>
     </div>
     <div class="container">
-      <p class="copyright">© 2026 GrabOffer. Product data sourced from Amazon.in best-seller lists. All listings rewritten. Affiliate tracking ID: <strong>${TRACKING_ID}</strong>.</p>
+      <p class="copyright">© 2026 GrabOffer. Deals and product listings are curated for convenience. GrabOffer is an affiliate partner of e-commerce sites and may earn commission from qualifying purchases.</p>
     </div>
   </footer>
 

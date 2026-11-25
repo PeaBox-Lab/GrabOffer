@@ -4,7 +4,7 @@
   'use strict';
 
   const DATA_URL = '../data/amazon-products.json';
-  const TRACKING_ID = 'iwebslog01-21';
+  const TRACKING_ID = 'YOUR_AMAZON_TAG';
 
   function buildBuyLink(originalLink) {
     if (!originalLink) return '#';

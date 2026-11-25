@@ -5,7 +5,7 @@
   'use strict';
 
   const DATA_URL = 'data/amazon-products.json';
-  const TRACKING_ID = 'iwebslog01-21';
+  const TRACKING_ID = 'YOUR_AMAZON_TAG';
 
   function buildBuyLink(originalLink) {
     if (!originalLink) return '#';
@@ -64,7 +64,7 @@
     const catName = cat ? cat.name : (catSlug || 'Unknown');
     document.title = `GrabOffer Amazon.in – ${catName} Best Sellers`;
     const h1 = document.querySelector('.amazon-hero h1');
-    if (h1) h1.textContent = `Amazon.in – ${catName} — Best Sellers (Rewritten)`;
+    if (h1) h1.textContent = `Amazon.in – ${catName} — Best Sellers`;
     const heroP = document.querySelector('.amazon-hero p');
     if (heroP) heroP.textContent = `We hand‑pick the top-selling products from Amazon.in, rewrite every listing in our own words, remix real user reviews into authentic summaries, and give you clean product pages with tracked affiliate links.`;
 

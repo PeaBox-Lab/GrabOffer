@@ -77,13 +77,14 @@ for (const cat of data.categories) {
   <section class="flipkart-hero">
     <div class="container">
       <h1>${esc(p.title)}</h1>
-      <p class="u-text-sm">Rewritten listing · affiliate tracking ID <strong>${TRACKING_ID}</strong></p>
+      <p class="u-text-sm">Product details, specifications, and buy link.</p>
     </div>
   </section>
 
   <section class="categories-section">
     <div class="container">
-      <div class="deal-detail-card">
+      <div class="product-layout-with-ad">
+        <div class="deal-detail-card">
         <div class="detail-head">
           <div class="detail-logo">
             <img src="https://www.google.com/s2/favicons?domain=flipkart.com&sz=64" alt="Flipkart" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'merchant-fallback',textContent:'FL'}))">
@@ -127,7 +128,7 @@ for (const cat of data.categories) {
               <p class="u-text-sm" style="color:#565959;">— ${esc(r.author)}${r.verified ? ' · Verified Purchase' : ''}</p>
             </div>`).join('')}
           </section>` : ''}
-          <div class="deal-coupon">Seller: ${esc(p.seller || 'Flipkart')} · Tracking: ${TRACKING_ID}</div>
+          <div class="deal-coupon">Seller: ${esc(p.seller || 'Flipkart')}</div>
           <div class="deal-actions">
             <a class="buy-btn" href="${buildBuyLink(p.buyLink)}" target="_blank" rel="nofollow sponsored noopener noreferrer">Buy Now on Flipkart <span aria-hidden="true">→</span></a>
           </div>
@@ -138,6 +139,9 @@ for (const cat of data.categories) {
             <p class="u-text-sm">Price: ${inr(p.price)} (MRP ${p.mrp ? inr(p.mrp) : '—'}) · Discount: ${p.discount || 0}%</p>
           </section>
         </div>
+        <aside class="affiliate-ad-slot" aria-label="Sponsored Flipkart offer">
+          <div data-WRID="WRID-150298349383872131" data-widgetType="Push Content" data-class="affiliateAdsByFlipkart" height="600" width="120"></div>
+        </aside>
       </div>
     </div>
   </section>
@@ -146,7 +150,7 @@ for (const cat of data.categories) {
     <div class="container">
       <div>
         <div class="logo">GrabOffer <span style="color:#ffd814;">Flipkart</span></div>
-        <p class="u-text-sm">Curated best-seller listings rewritten for clarity.</p>
+        <p class="u-text-sm">GrabOffer is an affiliate deals website. We may earn commission from qualifying purchases on partner e-commerce sites.</p>
       </div>
       <div>
         <h3>Categories</h3>
@@ -157,15 +161,16 @@ for (const cat of data.categories) {
       </div>
       <div>
         <h3>Affiliate</h3>
-        <p class="u-text-sm">All links include tracking ID <strong>${TRACKING_ID}</strong>.</p>
+        <p class="u-text-sm">GrabOffer is an affiliate deals website and partner of e-commerce sites. Prices and availability may change.</p>
       </div>
     </div>
     <div class="container">
-      <p class="copyright">© 2026 GrabOffer. Product data sourced from Flipkart best-seller lists. All listings rewritten. Affiliate tracking ID: <strong>${TRACKING_ID}</strong>.</p>
+      <p class="copyright">© 2026 GrabOffer. Deals and product listings are curated for convenience. GrabOffer is an affiliate partner of e-commerce sites and may earn commission from qualifying purchases.</p>
     </div>
   </footer>
 
   <script src="../../assets/js/app.js"></script>
+  <script async src="//affiliate.flipkart.com/affiliate/widgets/FKAffiliateWidgets.js"></script>
 </body>
 </html>`;
 

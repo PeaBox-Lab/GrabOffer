@@ -17,7 +17,7 @@ amazon/
 ├── data/amazon-products.json       # Scraped Amazon best-sellers (core dataset)
 ├── incoming/                       # Raw scraped product JSONs (one per product)
 │   └── amazon/<category>/<id>.json
-├── outgoing/                       # Rewritten/fresh product listings (static HTML)
+├── outgoing/                       # generated product listings (static HTML)
 │   └── electronics/amz-el-001.html
 └── scripts/                        # Future scrape / remix generation scripts
 ```
@@ -26,14 +26,14 @@ amazon/
 
 1. **Incoming** — raw product data fetched from Amazon.in category/subcategory best-seller pages (title, description, price, MRP, ratings, reviews, specs, images, seller, buy link).
 2. **Remix** — every field is rewritten in our own words; reviews are remixed into authentic summaries; a fresh listing is generated.
-3. **Outgoing** — static HTML product pages under `outgoing/<category>/<id>.html` serve the remixed listing, each with a **Buy Now** link appended with affiliate tag `?tag=iwebslog01-21`.
+3. **Outgoing** — static HTML product pages under `outgoing/<category>/<id>.html` serve the curated listing, each with a **Buy Now** link appended with affiliate tag `?tag=<your-amazon-tag>`.
 
 ## Affiliate tracking
 
 All outbound Amazon links carry the tracking ID:
 
 ```
-?tag=iwebslog01-21
+?tag=<your-amazon-tag>
 ```
 
 This is applied by `buildBuyLink()` in both JS files, so every sale is attributed to your Cuelinks / Amazon affiliate account.
